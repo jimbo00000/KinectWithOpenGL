@@ -1,0 +1,17 @@
+http://social.msdn.microsoft.com/Forums/en-US/a6d84e92-8081-4e64-90e8-93dc71023ce8/cl-nui-sdk
+
+
+Jason is, of course, right on for the data that can be returned from "default" depth mode.  For Near Mode (supported on Kinect for Windows devices, not Xbox devices), the range is 400-3000.  The current range can be retrieved from the managed API in DepthImageStream.MinDepth/MaxDepth, and the values themselves are in NuiImageCamera.h:
+
+#define NUI_IMAGE_DEPTH_MAXIMUM               ((4000 << NUI_IMAGE_PLAYER_INDEX_SHIFT) | NUI_IMAGE_PLAYER_INDEX_MASK)
+#define NUI_IMAGE_DEPTH_MINIMUM               (800 << NUI_IMAGE_PLAYER_INDEX_SHIFT)
+#define NUI_IMAGE_DEPTH_MAXIMUM_NEAR_MODE     ((3000 << NUI_IMAGE_PLAYER_INDEX_SHIFT) | NUI_IMAGE_PLAYER_INDEX_MASK)
+#define NUI_IMAGE_DEPTH_MINIMUM_NEAR_MODE     (400 << NUI_IMAGE_PLAYER_INDEX_SHIFT)
+
+The "13th bit" of the depth is used to help express one of the reserved values, i.e. "Unknown depth":
+
+#define NUI_IMAGE_DEPTH_NO_VALUE              0
+#define NUI_IMAGE_DEPTH_TOO_FAR_VALUE         (0x0fff << NUI_IMAGE_PLAYER_INDEX_SHIFT)
+#define NUI_DEPTH_DEPTH_UNKNOWN_VALUE         (0x1fff << NUI_IMAGE_PLAYER_INDEX_SHIFT)
+
+-Adam Smith [MSFT]
