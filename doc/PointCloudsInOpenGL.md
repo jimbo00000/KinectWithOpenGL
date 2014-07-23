@@ -8,7 +8,7 @@ From there, a vertex shader runs on a planar grid of points stored in a VBO with
 
 So far, everything appears optimal speed-wise and seems much more efficient than calling the function **NuiTransformDepthImageToSkeleton()** in a loop on the CPU.
 
-### Problem: It looks like garbage
+### Problem: point clouds appear stepped, flattened
 
 ![Raw values](BandedPointCloudCrop.png)  
 
@@ -16,9 +16,31 @@ The depth values appear to show serious banding, as though there aren't enough d
 
 ### The relevant source snippets:
 
-#### Declaration of our depth buffer:
+#### Declaration of depth buffer:
 
     std::vector<unsigned short> m_depthBuffer;
+
+#### Initialization of Camera using Kinect SDK:
+
+        // Initialize the Kinect and specify that we'll be using depth
+        hr = m_pNuiSensor->NuiInitialize(
+            NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX |
+            NUI_INITIALIZE_FLAG_USES_COLOR
+            );
+
+        if (SUCCEEDED(hr))
+        {
+            // Create an event that will be signaled when depth data is available
+            m_hNextDepthFrameEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+            // Open a depth image stream to receive depth frames
+            hr = m_pNuiSensor->NuiImageStreamOpen(
+                NUI_IMAGE_TYPE_DEPTH_AND_PLAYER_INDEX,
+                m_depthRes,
+                0,
+                2,
+                m_hNextDepthFrameEvent,
+                &m_pDepthStreamHandle);
 
 #### Copying data from the Kinect SDK into the buffer:  
 This code is copied right out of the Kinect SDK examples.
@@ -122,6 +144,7 @@ If the raw data is as banded as it looks, how do these guys get it looking like 
 
 
 ### Hardware used:
+Kinect v1, Kinect for Windows version located about 1m from subject  
 Intel i7 920  
 6 GB RAM  
 GTX 285  
