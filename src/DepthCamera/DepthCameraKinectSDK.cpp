@@ -122,12 +122,6 @@ int DepthCameraKinectSDK::_Initialize()
                 2,
                 m_hNextColorFrameEvent,
                 &m_pColorStreamHandle);
-
-            // Create an event that will be signaled when skeleton data is available
-            m_hNextSkeletonEvent = CreateEventW(NULL, TRUE, FALSE, NULL);
-
-            // Open a skeleton stream to receive skeleton data
-            hr = m_pNuiSensor->NuiSkeletonTrackingEnable(m_hNextSkeletonEvent, 0);
         }
     }
 
