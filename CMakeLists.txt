@@ -20,7 +20,7 @@ IF( WIN32 )
     #
     SET( LIBS_HOME "C:/lib" CACHE STRING "Location of support libraries Glut, Glew and others"  )
 
-    SET( GLM_ROOT "${LIBS_HOME}/glm-0.9.5.4/glm" )
+    SET( GLM_ROOT "${LIBS_HOME}/glm-0.9.5.4/glm" CACHE STRING "glm root" )
     INCLUDE_DIRECTORIES( "${GLM_ROOT}" )
     ADD_DEFINITIONS( -DGLM_FORCE_RADIANS )
 
@@ -42,7 +42,7 @@ IF( WIN32 )
     ENDIF()
 
     # TODO: use c++11 or Boost threads
-    SET( PTHREADS_ROOT "${LIBS_HOME}/pthreads/Pre-built.2" )
+    SET( PTHREADS_ROOT "${LIBS_HOME}/pthreads/Pre-built.2" CACHE STRING "PThreads root" )
     INCLUDE_DIRECTORIES( "${PTHREADS_ROOT}/include" )
     LINK_DIRECTORIES   ( "${PTHREADS_ROOT}/lib/x86" )
 
@@ -59,13 +59,11 @@ IF( WIN32 )
     IF( USE_KINECTSDK )
         MESSAGE("Using Kinect SDK (USE_KINECTSDK=TRUE)")
         ADD_DEFINITIONS( -DUSE_KINECTSDK )
-        SET( KINECTSDK_HOME "C:/Program Files/Microsoft SDKs/Kinect/v1.6/" )
-
+        SET( KINECTSDK_HOME "C:/Program Files/Microsoft SDKs/Kinect/v1.6/" CACHE STRING "Kinect SDK home" )
         # <IncludePath>$(KINECTSDK10_DIR)\inc;$(IncludePath)</IncludePath>
         # <LibraryPath>$(KINECTSDK10_DIR)\lib\x86;$(LibraryPath)</LibraryPath>
         INCLUDE_DIRECTORIES("$ENV{KINECTSDK10_DIR}inc/")
         LINK_DIRECTORIES("$ENV{KINECTSDK10_DIR}lib/x86/")
-        
         SET( KINECT_LIBS Kinect10.lib )
     ENDIF( USE_KINECTSDK )
 
@@ -78,7 +76,7 @@ IF( WIN32 )
     ENDIF( USE_OPENNI )
 
     IF( USE_ANTTWEAKBAR )
-        SET( ANTTWEAKBAR_ROOT "${LIBS_HOME}/AntTweakBar_116/AntTweakBar" )
+        SET( ANTTWEAKBAR_ROOT "${LIBS_HOME}/AntTweakBar_116/AntTweakBar" CACHE STRING "AntTweakbar root" )
         INCLUDE_DIRECTORIES( "${ANTTWEAKBAR_ROOT}/include" )
         LINK_DIRECTORIES   ( "${ANTTWEAKBAR_ROOT}/lib" )
         SET( ANT_LIBS AntTweakBar.lib )
