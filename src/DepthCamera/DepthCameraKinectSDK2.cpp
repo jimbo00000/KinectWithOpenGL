@@ -82,45 +82,19 @@ int DepthCameraKinectSDK2::_Uninitialize()
 /// Copy depth pixels from locked KinectSDK buffer into our local depth buffer.
 void DepthCameraKinectSDK2::_ProcessDepth(UINT16* pBuffer)
 {
-    memcpy(&m_depthBuffer[0], pBuffer, m_depthWidth * m_depthHeight * sizeof(UINT16));
-
-#if 0
-    // RGBA8
-
-    // Make sure we've received valid data
-    //if (m_pDepthRGBX && pBuffer && (nWidth == cDepthWidth) && (nHeight == cDepthHeight))
+    //memcpy(&m_depthBuffer[0], pBuffer, m_depthWidth * m_depthHeight * sizeof(UINT16));
+    for (int i=0; i<m_depthWidth * m_depthHeight; ++i)
     {
-        RGBQUAD* pRGBX = m_pDepthRGBX;
-
-        // end pixel is start + width*height - 1
-        const UINT16* pBufferEnd = pBuffer + (nWidth * nHeight);
-
-        while (pBuffer < pBufferEnd)
-        {
-            USHORT depth = *pBuffer;
-
-            // To convert to a byte, we're discarding the most-significant
-            // rather than least-significant bits.
-            // We're preserving detail, although the intensity will "wrap."
-            // Values outside the reliable depth range are mapped to 0 (black).
-
-            // Note: Using conditionals in this loop could degrade performance.
-            // Consider using a lookup table instead when writing production code.
-            BYTE intensity = static_cast<BYTE>((depth >= nMinDepth) && (depth <= nMaxDepth) ? (depth % 256) : 0);
-
-            pRGBX->rgbRed   = intensity;
-            pRGBX->rgbGreen = intensity;
-            pRGBX->rgbBlue  = intensity;
-
-            ++pRGBX;
-            ++pBuffer;
-        }
-
-        // Draw the data with Direct2D
-        m_pDrawDepth->Draw(reinterpret_cast<BYTE*>(m_pDepthRGBX), cDepthWidth * cDepthHeight * sizeof(RGBQUAD));
-//      m_depthBuffer[i++] = depth;
+        USHORT d = pBuffer[i];
+        USHORT high = d & 0xFF00;
+        USHORT low = d & 0xFF;
+        USHORT shitfhi = high >> 8;
+        USHORT shiftlo = low << 8;
+        // It looks like this is the missing depth we're looking for, but it isn't
+        // immediately clear to me how to create world space points.
+        USHORT dx = shitfhi | shiftlo;
+        m_depthBuffer[i] = dx;
     }
-#endif
 }
 
 /// Copy the color image from the Kinect stream into the color buffer.
