@@ -230,7 +230,15 @@ void DepthCameraKinectSDK::_ProcessDepth()
         {
             // discard the portion of the depth that contains only the player index
             USHORT depth = pBufferRun->depth;
-            m_depthBuffer[i++] = depth;
+            USHORT d = depth;
+            USHORT high = d & 0xFF00;
+            USHORT low = d & 0xFF;
+            USHORT shitfhi = high >> 8;
+            USHORT shiftlo = low << 8;
+            // It looks like this is the missing depth we're looking for, but it isn't
+            // immediately clear to me how to create world space points.
+            USHORT dx = shitfhi | shiftlo;
+            m_depthBuffer[i++] = dx;
 
             // Increment our index into the Kinect's depth buffer
             ++pBufferRun;
