@@ -50,12 +50,22 @@ IF( WIN32 )
     # Choose one of the following Kinect backends here by setting its variable to TRUE.
     #
     SET( USE_KINECTSDK FALSE CACHE BOOL "Use Kinect4Windows SDK" )
+    SET( USE_KINECTSDK2 FALSE CACHE BOOL "Use Kinect4Windows SDK2" )
     SET( USE_OPENNI FALSE CACHE BOOL "Use OpenNI library" )
     SET( USE_LIBFREENECT FALSE )
-    
+
     #
     # Kinect backend specific sections
     #
+    IF( USE_KINECTSDK2 )
+        MESSAGE("Using Kinect SDK 2 (USE_KINECTSDK2=TRUE)")
+        ADD_DEFINITIONS( -DUSE_KINECTSDK2 )
+        SET( KINECTSDK2_HOME "$ENV{KINECTSDK20_DIR}" CACHE STRING "Kinect SDK 2 home" )
+        INCLUDE_DIRECTORIES("$ENV{KINECTSDK20_DIR}inc/")
+        LINK_DIRECTORIES("$ENV{KINECTSDK20_DIR}lib/x86/")
+        SET( KINECT_LIBS Kinect20.lib )
+    ENDIF( USE_KINECTSDK2 )
+
     IF( USE_KINECTSDK )
         MESSAGE("Using Kinect SDK (USE_KINECTSDK=TRUE)")
         ADD_DEFINITIONS( -DUSE_KINECTSDK )

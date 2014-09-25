@@ -23,6 +23,7 @@
 #include "ShaderWithVariables.h"
 #include "FPSTimer.h"
 #include "DepthCameraKinectSDK.h"
+#include "DepthCameraKinectSDK2.h"
 #include "DepthCameraOpenNI.h"
 #include "DepthCameraFromFile.h"
 #include "DepthCamScene.h"
@@ -373,13 +374,17 @@ void *ThreadFunction(void*)
         glfwMakeContextCurrent(g_pUploadWindow);
     }
 
-    g_pCamera = new
+    g_pCamera = 
 #if defined(USE_SAVED_DATA)
-        DepthCameraFromFile();
+        new DepthCameraFromFile();
+#elif defined(USE_KINECTSDK2)
+        new DepthCameraKinectSDK2();
 #elif defined(USE_KINECTSDK)
-        DepthCameraKinectSDK();
+        new DepthCameraKinectSDK();
+#elif defined(USE_OPENNI)
+        new DepthCameraOpenNI();
 #else
-        DepthCameraOpenNI();
+        NULL;
 #endif
 
     while (true)
