@@ -94,9 +94,9 @@ void DepthCameraKinectSDK2::_ProcessDepth(UINT16* pBuffer)
 
         USHORT minDepth = 0;
         //USHORT maxDepth = 0x1ef6;
-        USHORT maxDepth = 0x3ef6;
+        USHORT maxDepth = m_depthScale; //0x3ef6;
 
-        const float fd = ((float)d - minDepth) / ((float)maxDepth - (float)minDepth);
+        float fd = ((float)d - minDepth) / ((float)maxDepth - (float)minDepth);
         const USHORT ufd = (USHORT)(fd * (float)USHRT_MAX);
 
         m_depthBuffer[i] = ufd;

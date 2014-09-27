@@ -56,6 +56,7 @@ DepthCamScene g_scene;
 glm::vec2 g_rotate(0.0f, 0.0f);
 glm::vec3 g_translate(0.0f, 0.0f, 0.0f);
 float g_depthScale = 1.0f;
+unsigned int g_depthScaleRaw = 0xFFFF;
 
 #ifdef USE_ANTTWEAKBAR
 TwBar* g_pTweakbar = NULL;
@@ -187,6 +188,29 @@ static void TW_CALL GetUploadFPS(void *value, void *clientData)
     *(unsigned int *)value = static_cast<unsigned int>(g_uploadTimer.GetFPS());
 }
 
+
+
+
+static void TW_CALL GetScaleFactor(void *value, void *clientData)
+{
+    DepthCamera* pCamera = reinterpret_cast<DepthCamera*>(clientData);
+    if (pCamera == NULL)
+        return;
+
+    *(unsigned int *)value = static_cast<unsigned int>(pCamera->m_depthScale);
+}
+
+static void TW_CALL SetScaleFactor(const void *value, void *clientData)
+{
+    DepthCamera* pCamera = reinterpret_cast<DepthCamera*>(clientData);
+    if (pCamera == NULL)
+        return;
+
+    //*(unsigned int *)value = static_cast<unsigned int>(pCamera->m_depthScale);
+    pCamera->m_depthScale = *(unsigned int *)value;
+}
+
+
 void InitializeBar()
 {
     ///@note Bad size errors will be thrown if this is not called at init
@@ -197,10 +221,12 @@ void InitializeBar()
     TwAddVarCB(g_pTweakbar, "Display FPS", TW_TYPE_UINT32, NULL, GetDisplayFPS, NULL, " group='Performance' ");
     TwAddVarCB(g_pTweakbar, "Upload FPS", TW_TYPE_UINT32, NULL, GetUploadFPS, NULL, " group='Performance' ");
 
-    TwAddVarRW(g_pTweakbar, "Thread sleep", TW_TYPE_UINT32, &g_captureThreadSleepMs, 
+    TwAddVarRW(g_pTweakbar, "Thread sleep", TW_TYPE_UINT32, &g_captureThreadSleepMs,
                " min=1 max=100 help='Thread sleep interval in ms' ");
-    TwAddVarRW(g_pTweakbar, "Depth Scale", TW_TYPE_FLOAT, &g_depthScale, 
+    TwAddVarRW(g_pTweakbar, "Depth Scale", TW_TYPE_FLOAT, &g_depthScale,
                " min=0 max=100 step=0.05 help='Depth scale factor' ");
+    TwAddVarRW(g_pTweakbar, "Depth Scale Raw", TW_TYPE_UINT32, &g_depthScaleRaw,
+               " min=0 max=3276800 step=256 help='Depth scale factor' ");
 }
 #endif
 
@@ -389,6 +415,8 @@ void *ThreadFunction(void*)
 
     while (true)
     {
+        if (g_pCamera != NULL)
+            g_pCamera->m_depthScale = g_depthScaleRaw;
         g_uploadTimer.OnFrame();
         uploadTexture();
 

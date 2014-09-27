@@ -11,7 +11,8 @@ class DepthCamera
 {
 public:
     DepthCamera()
-    : m_depthWidth(0)
+    : m_depthScale(0xFFFF)
+    , m_depthWidth(0)
     , m_depthHeight(0)
     , m_depthBuffer()
     , m_colorBuffer()
@@ -42,6 +43,8 @@ public:
 
     virtual int SaveColorToFile(const std::string& filename);
     virtual int SaveDepthToFile(const std::string& filename);
+
+    unsigned int m_depthScale;
 
 protected:
     unsigned int m_depthWidth;  ///< width of kinect depth stream buffer
