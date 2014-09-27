@@ -217,30 +217,29 @@ void DepthCameraKinectSDK::_ProcessDepth()
     // Make sure we've received valid data
     if (LockedRect.Pitch != 0)
     {
-        // Get the min and max reliable depth for the current frame
-        //int minDepth = (nearMode ? NUI_IMAGE_DEPTH_MINIMUM_NEAR_MODE : NUI_IMAGE_DEPTH_MINIMUM) >> NUI_IMAGE_PLAYER_INDEX_SHIFT;
-        //int maxDepth = (nearMode ? NUI_IMAGE_DEPTH_MAXIMUM_NEAR_MODE : NUI_IMAGE_DEPTH_MAXIMUM) >> NUI_IMAGE_PLAYER_INDEX_SHIFT;
         const NUI_DEPTH_IMAGE_PIXEL * pBufferRun = reinterpret_cast<const NUI_DEPTH_IMAGE_PIXEL *>(LockedRect.pBits);
 
         // end pixel is start + width*height - 1
         const NUI_DEPTH_IMAGE_PIXEL * pBufferEnd = pBufferRun + (m_depthWidth * m_depthHeight);
 
+        const USHORT minDepth = NUI_IMAGE_DEPTH_MINIMUM;
+        const USHORT maxDepth = NUI_IMAGE_DEPTH_MAXIMUM;
         int i = 0;
         while (pBufferRun < pBufferEnd)
         {
             // discard the portion of the depth that contains only the player index
-            USHORT depth = pBufferRun->depth;
-            USHORT d = depth;
-            USHORT high = d & 0xFF00;
-            USHORT low = d & 0xFF;
-            USHORT shitfhi = high >> 8;
-            USHORT shiftlo = low << 8;
-            // It looks like this is the missing depth we're looking for, but it isn't
-            // immediately clear to me how to create world space points.
-            USHORT dx = shitfhi | shiftlo;
-            m_depthBuffer[i++] = dx;
+            USHORT depth = pBufferRun->depth << NUI_IMAGE_PLAYER_INDEX_SHIFT;
+            if (depth == NUI_IMAGE_DEPTH_TOO_FAR_VALUE)
+                depth = 0;
+            else if (depth == NUI_IMAGE_DEPTH_UNKNOWN_VALUE)
+                depth = 0;
+            depth = std::max(minDepth, depth);
 
-            // Increment our index into the Kinect's depth buffer
+            const float fd = ((float)depth - minDepth) / ((float)maxDepth - (float)minDepth);
+            const USHORT ufd = (USHORT)(fd * (float)USHRT_MAX);
+
+            m_depthBuffer[i++] = ufd;
+
             ++pBufferRun;
         }
     }
