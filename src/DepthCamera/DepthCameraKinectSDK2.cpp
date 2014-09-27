@@ -82,18 +82,24 @@ int DepthCameraKinectSDK2::_Uninitialize()
 /// Copy depth pixels from locked KinectSDK buffer into our local depth buffer.
 void DepthCameraKinectSDK2::_ProcessDepth(UINT16* pBuffer)
 {
+    int mind = USHRT_MAX;
+    int maxd = 0;
+
     //memcpy(&m_depthBuffer[0], pBuffer, m_depthWidth * m_depthHeight * sizeof(UINT16));
     for (int i=0; i<m_depthWidth * m_depthHeight; ++i)
     {
-        USHORT d = pBuffer[i];
-        USHORT high = d & 0xFF00;
-        USHORT low = d & 0xFF;
-        USHORT shitfhi = high >> 8;
-        USHORT shiftlo = low << 8;
-        // It looks like this is the missing depth we're looking for, but it isn't
-        // immediately clear to me how to create world space points.
-        USHORT dx = shitfhi | shiftlo;
-        m_depthBuffer[i] = dx;
+        USHORT d = pBuffer[i] << 3;
+        mind = std::min(mind, (int)d);
+        maxd = std::max(maxd, (int)d);
+
+        USHORT minDepth = 0;
+        //USHORT maxDepth = 0x1ef6;
+        USHORT maxDepth = 0x3ef6;
+
+        const float fd = ((float)d - minDepth) / ((float)maxDepth - (float)minDepth);
+        const USHORT ufd = (USHORT)(fd * (float)USHRT_MAX);
+
+        m_depthBuffer[i] = ufd;
     }
 }
 
