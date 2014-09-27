@@ -222,8 +222,12 @@ void DepthCameraKinectSDK::_ProcessDepth()
         // end pixel is start + width*height - 1
         const NUI_DEPTH_IMAGE_PIXEL * pBufferEnd = pBufferRun + (m_depthWidth * m_depthHeight);
 
-        const USHORT minDepth = NUI_IMAGE_DEPTH_MINIMUM;
-        const USHORT maxDepth = NUI_IMAGE_DEPTH_MAXIMUM;
+        //const USHORT minDepth = NUI_IMAGE_DEPTH_MINIMUM;
+        //const USHORT maxDepth = NUI_IMAGE_DEPTH_MAXIMUM;
+        const USHORT minDepth = 0;
+        //USHORT maxDepth = 0x1ef6;
+        const USHORT maxDepth = m_depthScale; //0x3ef6;
+
         int i = 0;
         while (pBufferRun < pBufferEnd)
         {
@@ -235,7 +239,8 @@ void DepthCameraKinectSDK::_ProcessDepth()
                 depth = 0;
             depth = std::max(minDepth, depth);
 
-            const float fd = ((float)depth - minDepth) / ((float)maxDepth - (float)minDepth);
+            float fd = ((float)depth - minDepth) / ((float)maxDepth - (float)minDepth);
+            //fd = pow(fd, 1.0f/3.0f);
             const USHORT ufd = (USHORT)(fd * (float)USHRT_MAX);
 
             m_depthBuffer[i++] = ufd;
