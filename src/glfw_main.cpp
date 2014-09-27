@@ -188,29 +188,6 @@ static void TW_CALL GetUploadFPS(void *value, void *clientData)
     *(unsigned int *)value = static_cast<unsigned int>(g_uploadTimer.GetFPS());
 }
 
-
-
-
-static void TW_CALL GetScaleFactor(void *value, void *clientData)
-{
-    DepthCamera* pCamera = reinterpret_cast<DepthCamera*>(clientData);
-    if (pCamera == NULL)
-        return;
-
-    *(unsigned int *)value = static_cast<unsigned int>(pCamera->m_depthScale);
-}
-
-static void TW_CALL SetScaleFactor(const void *value, void *clientData)
-{
-    DepthCamera* pCamera = reinterpret_cast<DepthCamera*>(clientData);
-    if (pCamera == NULL)
-        return;
-
-    //*(unsigned int *)value = static_cast<unsigned int>(pCamera->m_depthScale);
-    pCamera->m_depthScale = *(unsigned int *)value;
-}
-
-
 void InitializeBar()
 {
     ///@note Bad size errors will be thrown if this is not called at init
