@@ -60,20 +60,16 @@ IF( WIN32 )
     IF( USE_KINECTSDK2 )
         MESSAGE("Using Kinect SDK 2 (USE_KINECTSDK2=TRUE)")
         ADD_DEFINITIONS( -DUSE_KINECTSDK2 )
-        SET( KINECTSDK2_HOME "$ENV{KINECTSDK20_DIR}" CACHE STRING "Kinect SDK 2 home" )
         INCLUDE_DIRECTORIES("$ENV{KINECTSDK20_DIR}inc/")
-        LINK_DIRECTORIES("$ENV{KINECTSDK20_DIR}lib/x86/")
+        LINK_DIRECTORIES   ("$ENV{KINECTSDK20_DIR}lib/x86/")
         SET( KINECT_LIBS Kinect20.lib )
     ENDIF( USE_KINECTSDK2 )
 
     IF( USE_KINECTSDK )
         MESSAGE("Using Kinect SDK (USE_KINECTSDK=TRUE)")
         ADD_DEFINITIONS( -DUSE_KINECTSDK )
-        SET( KINECTSDK_HOME "C:/Program Files/Microsoft SDKs/Kinect/v1.6/" CACHE STRING "Kinect SDK home" )
-        # <IncludePath>$(KINECTSDK10_DIR)\inc;$(IncludePath)</IncludePath>
-        # <LibraryPath>$(KINECTSDK10_DIR)\lib\x86;$(LibraryPath)</LibraryPath>
         INCLUDE_DIRECTORIES("$ENV{KINECTSDK10_DIR}inc/")
-        LINK_DIRECTORIES("$ENV{KINECTSDK10_DIR}lib/x86/")
+        LINK_DIRECTORIES   ("$ENV{KINECTSDK10_DIR}lib/x86/")
         SET( KINECT_LIBS Kinect10.lib )
     ENDIF( USE_KINECTSDK )
 
